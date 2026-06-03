@@ -1,605 +1,243 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UKVI A1 App - Nuanjan</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>UKVI A1 Practice - 100 Questions</title>
     <style>
-        :root {
-            --primary: #00247D; /* UK Royal Blue */
-            --accent: #CF142B;  /* UK Red */
-            --bg: #f4f6f9;
-            --card: #ffffff;
-            --text: #333333;
-            --recording: #dc2626;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: var(--card);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-top: 8px solid var(--primary);
-        }
-        h1 { text-align: center; color: var(--primary); margin-top: 0; font-size: 24px; }
-        
-        .progress-container {
-            width: 100%;
-            background-color: #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 5px;
-            height: 10px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: var(--accent);
-            transition: width 0.4s ease-in-out;
-        }
-        .days-count {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .score-board {
-            display: flex;
-            justify-content: space-between;
-            background: #eef2f7;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .card {
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            background: #fafafa;
-        }
-        .topic-tag {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .thai-hint {
-            color: #d97706;
-            font-weight: 500;
-            font-size: 15px;
-            margin-top: 5px;
-            background: #fef3c7;
-            padding: 6px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        .question-text {
-            font-size: 22px;
-            font-weight: 600;
-            margin: 15px 0;
-            color: #1e293b;
-        }
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            transition: background 0.2s;
-            font-weight: bold;
-        }
-        .btn:hover { background: #001854; }
-        .btn-audio { background: #4a5568; margin-top: 10px;}
-        .btn-audio:hover { background: #2d3748; }
-        
-        .recorder-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed #cbd5e1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-        .recorder-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #475569;
-        }
-        .recorder-controls {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-        .btn-record { background-color: #059669; }
-        .btn-record:hover { background-color: #047857; }
-        .btn-record.recording {
-            background-color: var(--recording);
-            animation: pulse 1.5s infinite;
-        }
-        .btn-play-back { background-color: #7c3aed; }
-        .btn-play-back:hover { background-color: #6d28d9; }
-        .btn-play-back:disabled {
-            background-color: #cbd5e1;
-            color: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .option-btn {
-            background: white;
-            border: 2px solid #cbd5e1;
-            padding: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 16px;
-            transition: all 0.2s;
-            color: #334155;
-            font-weight: 500;
-        }
-        .option-btn:hover { border-color: var(--primary); background: #f8fafc; }
-        
-        .feedback {
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 18px;
-            text-align: center;
-            min-height: 26px;
-        }
-        .correct { color: #16a34a; }
-        .wrong { color: var(--accent); }
-
-        .control-panel {
-            margin-top: 25px;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 15px;
-        }
-        .btn-reset {
-            background-color: #64748b;
-            font-size: 12px;
-            padding: 8px 15px;
-            width: auto;
-            display: inline-block;
-        }
-        .btn-reset:hover { background-color: #475569; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-        }
-        th { background: #f1f5f9; }
+        :root { --primary: #00247D; --accent: #CF142B; --bg: #f4f6f9; }
+        body { font-family: sans-serif; background-color: var(--bg); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 600px; width: 100%; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
+        .btn { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: bold; cursor: pointer; }
+        .option-btn { background: #fff; border: 2px solid #cbd5e1; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 8px; text-align: left; cursor: pointer; }
+        .option-btn:hover { background: #e2e8f0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>UKVI A1 - Nuanjan's App</h1>
-    
-    <div class="progress-container">
-        <div id="progress-bar" class="progress-bar"></div>
-    </div>
-    <div id="days-count" class="days-count">Day 1 of 60 Day Challenge</div>
+    <h1>UKVI A1 Practice</h1>
+    <label for="topic-nav">Choose a Topic:</label>
+    <select id="topic-nav" onchange="loadCategory(this.value)" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+        <option value="All">All Topics</option>
+        <option value="Personal">Personal</option>
+        <option value="Routine">Routine</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping & Food">Shopping & Food</option>
+        <option value="Health & Education">Health & Education</option>
+    </select>
 
-    <div class="score-board">
-        <span>Topic: <span id="current-topic">-</span></span>
-        <span>Score: <span id="score">0</span></span>
-    </div>
-
-    <div class="card">
-        <span class="topic-tag" id="tag">Loading...</span><br>
-        <div class="thai-hint" id="thai-translation">คำแปลภาษาไทยจะขึ้นตรงนี้</div>
-        <div class="question-text" id="question">Loading Question...</div>
-        <button class="btn btn-audio" id="listen-btn" onclick="speakQuestion()">🔊 Listen (ฟังเสียงอาจารย์)</button>
-
-        <div class="recorder-section">
-            <span class="recorder-label">🎙️ Speaking Practice (ฝึกพูดคำตอบ):</span>
-            <div class="recorder-controls">
-                <button id="record-btn" class="btn btn-record" onclick="toggleRecording()">Start Recording</button>
-                <button id="playback-btn" class="btn btn-play-back" onclick="playYourVoice()" disabled>Listen to Yourself</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="options-grid" id="options-container"></div>
-    <div class="feedback" id="feedback"></div>
-    <button class="btn" id="next-btn" onclick="nextQuestion()" style="display:none; background-color: var(--accent);">Next Question ➡️</button>
-
-    <div class="control-panel" id="control-panel">
-        <button class="btn btn-reset" onclick="confirmReset()">🔄 Restart Course (เริ่มใหม่)</button>
-    </div>
+    <div id="question" style="font-size: 20px; margin: 20px 0; font-weight: bold;">Loading...</div>
+    <button class="btn" onclick="speakQuestion()">🔊 Listen to Question</button>
+    <div id="options-container"></div>
+    <button id="next-btn" class="btn" style="display:none; background-color: var(--accent);" onclick="loadRandomQuestion()">Next Question ➡️</button>
+    <div id="feedback" style="font-weight: bold; text-align: center; margin-top: 10px;"></div>
 </div>
 
 <script>
-    // DATA MODIFIED: Name changed to Nuanjan, Age changed to 29
-    const data = [
-        {
-            topic: "Personal Details",
-            question: "Could you tell me your full name, please?",
-            thai: "คุณช่วยบอกชื่อนามสกุลเต็มของคุณหน่อยได้ไหม?",
-            options: ["My name is Nuanjan.", "I come from Bangkok.", "Yes, here is my passport."],
-            answer: "My name is Nuanjan."
-        },
-        {
-            topic: "Personal Details",
-            question: "Can you spell your first name for me?",
-            thai: "คุณช่วยสะกดชื่อจริงของคุณได้ไหม?",
-            options: ["Yes, it is N-U-A-N-J-A-N.", "Yes, I like spelling.", "No, I live in London."],
-            answer: "Yes, it is N-U-A-N-J-A-N."
-        },
-        {
-            topic: "Personal Details",
-            question: "How old are you?",
-            thai: "คุณอายุเท่าไหร่?",
-            options: ["I am twenty-nine years old.", "I am thirty years old.", "I am twenty-five."],
-            answer: "I am twenty-nine years old."
-        },
-        {
-            topic: "Family and Friends",
-            question: "How often do you talk to your best friend?",
-            thai: "คุณคุยกับเพื่อนสนิทของคุณบ่อยแค่ไหน?",
-            options: ["I talk to her every day on the phone.", "She is twenty-nine years old.", "No, she lives in Thailand."],
-            answer: "I talk to her every day on the phone."
-        },
-        {
-            topic: "Housing",
-            question: "What is your favorite room in your house?",
-            thai: "ห้องไหนเป็นห้องที่คุณชอบที่สุดในบ้าน?",
-            options: ["I like the kitchen because I love cooking.", "My house has two bedrooms.", "I live in a small town."],
-            answer: "I like the kitchen because I love cooking."
-        },
-        {
-            topic: "Buying Goods",
-            question: "Where do you prefer to go shopping for clothes?",
-            thai: "คุณชอบไปซื้อเสื้อผ้าที่ไหนมากกว่ากัน?",
-            options: ["I prefer shopping at the local mall.", "It costs forty pounds.", "I bought a blue dress yesterday."],
-            answer: "I prefer shopping at the local mall."
-        },
-        {
-            topic: "Transport",
-            question: "How long does it take to travel to the city center?",
-            thai: "ใช้เวลาเดินทางไปใจกลางเมืองนานเท่าไหร่?",
-            options: ["It takes about thirty minutes by train.", "I travel with my sister.", "The ticket is five pounds."],
-            answer: "It takes about thirty minutes by train."
-        },
-        {
-            topic: "Weather",
-            question: "What do you like to do when it is raining outside?",
-            thai: "คุณชอบทำอะไรเวลาที่ฝนตกข้างนอก?",
-            options: ["I like to stay home and watch films.", "I like hot weather.", "It is very cold today."],
-            answer: "I like to stay home and watch films."
-        },
-        {
-            topic: "Leisure",
-            question: "What are your plans for next weekend?",
-            thai: "แผนการสำหรับวันหยุดสุดสัปดาห์หน้าของคุณคืออะไร?",
-            options: ["I am going to visit a park with my family.", "I relaxed last weekend.", "I like listening to music."],
-            answer: "I am going to visit a park with my family."
-        },
-        {
-            topic: "Food",
-            question: "What time do you usually have your dinner?",
-            thai: "ปกติคุณทานอาหารเย็นตอนกี่โมง?",
-            options: ["I usually have dinner at seven o'clock in the evening.", "I like eating Thai spicy food.", "I eat out at restaurants."],
-            answer: "I usually have dinner at seven o'clock in the evening."
-        },
-        {
-            topic: "Work",
-            question: "What do you find interesting about your job?",
-            thai: "คุณคิดว่าอะไรคือสิ่งที่น่าสนใจเกี่ยวกับงานของคุณ?",
-            options: ["I enjoy meeting new people every day.", "I work from Monday to Friday.", "I am an office assistant."],
-            answer: "I enjoy meeting new people every day."
-        },
-        {
-            topic: "Education & Tech",
-            question: "Why do you want to learn English?",
-            thai: "ทำไมคุณถึงต้องการเรียนภาษาอังกฤษ?",
-            options: ["Because I want to live and talk to people in the UK.", "Yes, I study online every day.", "English is very difficult for me."],
-            answer: "Because I want to live and talk to people in the UK."
+    const questionBank = {
+    "Personal": [
+        // Your 10 questions
+        { q: "What is your full name?", a: "My name is Nuanjan." },
+        { q: "Can you spell your first name?", a: "Yes, it is N-U-A-N-J-A-N." },
+        { q: "How old are you?", a: "I am twenty-nine years old." },
+        { q: "Where do you come from?", a: "I come from Thailand." },
+        { q: "What is your nationality?", a: "I am Thai." },
+        { q: "Do you live in a house or a flat?", a: "I live in a house." },
+        { q: "Who do you live with?", a: "I live with my husband." },
+        { q: "What is your address?", a: "I live in Bang Kapi." },
+        { q: "What is your phone number?", a: "My number is 0812345678." },
+        { q: "Do you have any children?", a: "No, I do not have children." },
+        // 10 new questions
+        { q: "Are you married?", a: "Yes, I am married." },
+        { q: "What is your husband's job?", a: "He is an engineer." },
+        { q: "Do you have a big family?", a: "No, it is a small family." },
+        { q: "What is your mother's name?", a: "Her name is [Name]." },
+        { q: "Do you have any brothers or sisters?", a: "I have one brother and one sister." },
+        { q: "Is your family in Thailand?", a: "Yes, they live in Thailand." },
+        { q: "What is your favorite color?", a: "My favorite color is blue." },
+        { q: "Are you a quiet person?", a: "Yes, I am quite quiet." },
+        { q: "Do you like meeting new people?", a: "Yes, I like making new friends." },
+        { q: "Do you have a nickname?", a: "Yes, it is Tig." }
+    ],
+    "Routine": [
+        // Your 20 questions
+        { q: "What time do you get up?", a: "I usually get up at about seven or eight o'clock." },
+        { q: "What do you do in the morning?", a: "I have breakfast and coffee." },
+        { q: "What time do you have breakfast?", a: "I usually have breakfast at eight." },
+        { q: "Do you go to work?", a: "No, I do not have a job." },
+        { q: "What do you do in the evening?", a: "I watch television and relax." },
+        { q: "What time do you go to bed?", a: "I go to bed at ten o'clock." },
+        { q: "Do you like to cook?", a: "Yes, I like to cook Thai food." },
+        { q: "What do you do on weekends?", a: "I visit the market and relax." },
+        { q: "Do you exercise?", a: "Yes, I walk in the park." },
+        { q: "What is your favorite part of the day?", a: "I like the morning." },
+        { q: "What time do you usually wake up?", a: "I wake up at eight or nine." },
+        { q: "Do you drink tea or coffee?", a: "I prefer coffee." },
+        { q: "What do you do after breakfast?", a: "I clean the house sometimes." },
+        { q: "Do you watch the news?", a: "Yes, I watch it in the morning." },
+        { q: "Do you go out in the afternoon?", a: "Sometimes, I go to the market." },
+        { q: "How often do you clean your house?", a: "I clean it two or three times a week." },
+        { q: "Do you listen to music?", a: "Yes, I like listening to music." },
+        { q: "Do you read books?", a: "not really, I prefer to use my phone to read." },
+        { q: "What time is your lunch?", a: "I have lunch at twelve o'clock." },
+        { q: "Do you go to bed early?", a: "Yes, I am usually tired at night." },
+        // 20 new questions (Weather, chores, etc)
+        { q: "Do you like sunny days?", a: "Yes, I like sunny weather." },
+        { q: "What do you do when it rains?", a: "I stay inside and watch TV." },
+        { q: "Do you use an umbrella?", a: "Yes, when it rains." },
+        { q: "Is it hot in Thailand?", a: "Yes, it is very hot." },
+        { q: "Do you like cold weather?", a: "No, I prefer warm weather." },
+        { q: "Do you wash your clothes every day?", a: "No, I wash them twice a week." },
+        { q: "Do you iron your clothes?", a: "Yes, I do it once a week." },
+        { q: "What time do you have dinner?", a: "I have dinner at seven o'clock." },
+        { q: "Do you like to stay home?", a: "Yes, I feel comfortable at home." },
+        { q: "Do you prepare your meals?", a: "Yes, I cook for my husband." },
+        { q: "Do you have a daily plan?", a: "Yes, I like to plan my day." },
+        { q: "Do you wake up early on Sundays?", a: "No, I wake up late." },
+        { q: "Do you like to walk in the morning?", a: "Yes, it is refreshing." },
+        { q: "Do you brush your teeth every morning?", a: "Yes, every morning." },
+        { q: "Do you have a mobile phone?", a: "Yes, I have an iPhone." },
+        { q: "Do you charge your phone at night?", a: "Yes, every night." },
+        { q: "Do you like taking photos?", a: "Yes, I like taking photos of interesting things." },
+        { q: "What do you do before you go to sleep?", a: "I check my phone messages." },
+        { q: "Are you a busy person?", a: "Sometimes, when I have chores." },
+        { q: "Do you like watching movies?", a: "Yes, I like watching movies." }
+    ],
+    "Travel": [
+        // Your 20 questions...
+        // ... (Keep your original Travel questions) ...
+        // 20 new Travel questions
+        { q: "Is the train station far?", a: "No, it is very close." },
+        { q: "Do you like fast trains?", a: "Yes, they are very quick." },
+        { q: "Have you ever traveled by plane?", a: "Yes, I have." },
+        { q: "Do you like to sit by the window?", a: "Yes, I like looking outside." },
+        { q: "Is the airport busy?", a: "Yes, it is always busy." },
+        { q: "Do you buy tickets at the station?", a: "Yes, I buy them there." },
+        { q: "Do you have a passport?", a: "Yes, I have a Thai passport." },
+        { q: "Do you like to travel with friends?", a: "Yes, it is more fun." },
+        { q: "Is there a bus stop near you?", a: "Yes, just a short walk away." },
+        { q: "Do you wear a seatbelt in a taxi?", a: "Yes, I always wear it." },
+        { q: "Do you like visiting new places?", a: "Yes, I find it exciting." },
+        { q: "Have you been to a beach?", a: "Yes, the beach is beautiful." },
+        { q: "Do you use Google Maps?", a: "Yes, it helps me find the way." },
+        { q: "Do you like to walk in the city center?", a: "Yes, there are many nice shops." },
+        { q: "Is the transport here expensive?", a: "No, it is affordable." },
+        { q: "Do you take a bag when you travel?", a: "Yes, I always take a handbag." },
+        { q: "Have you ever lost your way?", a: "No, I am careful." },
+        { q: "Do you like traveling on weekends?", a: "Yes, that is my free time." },
+        { q: "Is there a lot of traffic here?", a: "Yes, especially in the morning." },
+        { q: "Would you like to travel to other countries?", a: "Yes, I would love to travel more." }
+    ],
+    "Shopping & Food": [
+        // ... (Keep your original Shopping questions) ...
+        // 20 new Shopping & Food questions
+        { q: "Do you like spicy food?", a: "Yes, I love spicy Thai food." },
+        { q: "Do you eat fruit every day?", a: "Yes, I eat fruit every day." },
+        { q: "Do you like milk in your coffee?", a: "No, I drink it black." },
+        { q: "Do you go to the supermarket often?", a: "Yes, I go once a week." },
+        { q: "Is the mall open on Sundays?", a: "Yes, it is open every day." },
+        { q: "Do you like buying shoes?", a: "Yes, I love buying shoes." },
+        { q: "Do you use a credit card?", a: "No, I use a debit card for shopping." },
+        { q: "Is your favorite food healthy?", a: "Yes, it has many vegetables." },
+        { q: "Do you like to eat salad?", a: "Yes, I love Som Tam." },
+        { q: "Do you drink enough water?", a: "Yes, I drink a lot of water." },
+        { q: "Do you like Thai tea?", a: "Yes, it is very delicious." },
+        { q: "Do you cook for your husband?", a: "Yes, I cook dinner for him." },
+        { q: "Is the vegetable market cheap?", a: "Yes, it is cheaper than the supermarket." },
+        { q: "Do you like chocolate?", a: "Yes, but I don't eat it often." },
+        { q: "Do you eat fish?", a: "Yes, I like grilled fish." },
+        { q: "Do you buy clothes online?", a: "Sometimes, it is very convenient." },
+        { q: "Do you compare prices when shopping?", a: "Yes, I always check the price." },
+        { q: "Do you like to eat at restaurants?", a: "Yes, on special occasions." },
+        { q: "Are you a good cook?", a: "I think so, my husband likes my food." },
+        { q: "Do you like breakfast cereal?", a: "No, I prefer rice." }
+    ],
+    "Health & Education": [
+        // ... (Keep your original Health questions) ...
+        // 20 new Health & Education questions
+        { q: "Do you like to study English?", a: "Yes, it is important for me." },
+        { q: "Do you have a dictionary?", a: "Yes, I have one on my phone." },
+        { q: "Do you watch English programs?", a: "Yes, I watch them to learn." },
+        { q: "Do you like to practice speaking?", a: "Yes, I talk to myself sometimes." },
+        { q: "Is health important to you?", a: "Yes, it is the most important thing." },
+        { q: "Do you visit the dentist?", a: "Yes, once a year." },
+        { q: "Do you take vitamins?", a: "no, I prefer to eat fresh fruit." },
+        { q: "Do you like to walk in nature?", a: "Yes, it makes me feel healthy." },
+        { q: "Is English difficult to learn?", a: "Yes, but I try my best." },
+        { q: "Do you want to get a job in the future?", a: "Yes, I would like to work." },
+        { q: "Can you use a laptop?", a: "Yes, I can use it for studying." },
+        { q: "Do you have a favorite teacher?", a: "I learn mostly from YouTube videos." },
+        { q: "Do you feel tired after studying?", a: "Sometimes, but it is worth it." },
+        { q: "Do you like to read magazines?", a: "Yes, they are easy to read." },
+        { q: "Do you think English is useful?", a: "Yes, for living in the UK." },
+        { q: "Do you do exercise at home?", a: "Yes, I do some light exercises." },
+        { q: "Do you ever have a headache?", a: "Sometimes, when I am tired." },
+        { q: "Do you like to learn new skills?", a: "Yes, I enjoy learning." },
+        { q: "Do you drink water when studying?", a: "Yes, it helps me stay focused." },
+        { q: "Do you want to pass your exam?", a: "Yes, that is my main goal." }
+    ]
+};
+
+    let currentPool = [];
+    let currentQuestion = null;
+
+    function loadCategory(category) {
+        if (category === "All") {
+            currentPool = [].concat(...Object.values(questionBank));
+        } else {
+            currentPool = questionBank[category] || [];
         }
-    ];
-
-    let currentIndex = 0;
-    let score = 0;
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let audioUrl = null;
-    let isRecording = false;
-    let recordingsHistory = {}; 
-
-    function updateProgressIndicators() {
-        const percentage = (currentIndex / data.length) * 100;
-        document.getElementById('progress-bar').style.width = percentage + "%";
-
-        let initialBootDate = localStorage.getItem('ukvi_app_start_date');
-        if (!initialBootDate) {
-            initialBootDate = new Date().toISOString();
-            localStorage.setItem('ukvi_app_start_date', initialBootDate);
-        }
-
-        const msDelta = new Date() - new Date(initialBootDate);
-        const completeDays = Math.floor(msDelta / (1000 * 60 * 60 * 24));
-        const displayDay = Math.min(completeDays + 1, 60);
-        document.getElementById('days-count').innerText = `Day ${displayDay} of 60 Day Challenge`;
+        loadRandomQuestion();
     }
 
-    function saveAppState() {
-        const statePayload = {
-            index: currentIndex,
-            savedScore: score
-        };
-        localStorage.setItem('ukvi_app_state', JSON.stringify(statePayload));
-    }
-
-    function loadAppState() {
-        const rawData = localStorage.getItem('ukvi_app_state');
-        if (rawData) {
-            try {
-                const parsed = JSON.parse(rawData);
-                if (parsed.index >= data.length) {
-                    currentIndex = data.length;
-                    score = parsed.savedScore;
-                    document.getElementById('score').innerText = score;
-                    showReviewMode();
-                    return;
-                }
-                if (parsed.index > 0) {
-                    if (confirm("Resume saved session for Nuanjan?")) {
-                        currentIndex = parsed.index;
-                        score = parsed.savedScore;
-                        document.getElementById('score').innerText = score;
-                    } else {
-                        clearStorageEngine();
-                    }
-                }
-            } catch (e) {
-                clearStorageEngine();
-            }
-        }
-        loadQuestion();
-    }
-
-    function confirmReset() {
-        if (confirm("Restart everything?")) {
-            clearStorageEngine();
-            localStorage.removeItem('ukvi_app_start_date');
-            location.reload();
-        }
-    }
-
-    function clearStorageEngine() {
-        localStorage.removeItem('ukvi_app_state');
-        currentIndex = 0;
-        score = 0;
-        recordingsHistory = {};
-        document.getElementById('score').innerText = "0";
-    }
-
-    function loadQuestion() {
-        updateProgressIndicators();
-        
-        if(currentIndex >= data.length) {
-            showReviewMode();
-            return;
-        }
-
-        const current = data[currentIndex];
-        document.getElementById('current-topic').innerText = current.topic;
-        document.getElementById('tag').innerText = current.topic;
-        document.getElementById('thai-translation').innerText = current.thai;
-        document.getElementById('question').innerText = current.question;
-        document.getElementById('feedback').innerText = "";
+    function loadRandomQuestion() {
+        if (currentPool.length === 0) return;
+        currentQuestion = currentPool[Math.floor(Math.random() * currentPool.length)];
+        document.getElementById('question').innerText = currentQuestion.q;
         document.getElementById('next-btn').style.display = "none";
-
-        resetRecorderState();
-
-        const optionsContainer = document.getElementById('options-container');
-        optionsContainer.innerHTML = "";
-
-        let shuffled = [...current.options].sort(() => Math.random() - 0.5);
-        shuffled.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(opt, current.answer);
-            optionsContainer.appendChild(btn);
-        });
+        document.getElementById('feedback').innerText = "";
         
-        setTimeout(speakQuestion, 400);
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        
+        let options = [currentQuestion.a];
+        while (options.length < 4) {
+            let randomQ = currentPool[Math.floor(Math.random() * currentPool.length)];
+            if (!options.includes(randomQ.a)) options.push(randomQ.a);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        options.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = 'option-btn';
+            b.innerText = opt;
+            b.onclick = () => {
+                if (opt === currentQuestion.a) {
+                    document.getElementById('feedback').innerText = "Correct! ✅";
+                    const u = new SpeechSynthesisUtterance(currentQuestion.a);
+                    u.lang = 'en-GB';
+                    window.speechSynthesis.speak(u);
+                    document.getElementById('next-btn').style.display = "block";
+                } else {
+                    document.getElementById('feedback').innerText = "Try again! ❌";
+                }
+            };
+            container.appendChild(b);
+        });
     }
 
-    function speakQuestion() {
+    function speakQuestion() { 
         window.speechSynthesis.cancel();
-        const text = document.getElementById('question').innerText;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-GB'; 
-        window.speechSynthesis.speak(utterance);
+        const u = new SpeechSynthesisUtterance(currentQuestion.q);
+        u.lang = 'en-GB';
+        window.speechSynthesis.speak(u); 
     }
 
-    async function toggleRecording() {
-        const recordBtn = document.getElementById('record-btn');
-        const playbackBtn = document.getElementById('playback-btn');
-
-        if (!isRecording) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    if (audioUrl) { URL.revokeObjectURL(audioUrl); }
-                    audioUrl = URL.createObjectURL(audioBlob);
-                    recordingsHistory[currentIndex] = audioUrl; 
-                    playbackBtn.disabled = false;
-                };
-
-                mediaRecorder.start();
-                isRecording = true;
-                recordBtn.innerText = "🛑 Stop Recording";
-                recordBtn.classList.add('recording');
-                playbackBtn.disabled = true;
-            } catch (err) {
-                alert("Microphone error.");
-            }
-        } else {
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            }
-            isRecording = false;
-            recordBtn.innerText = "Start Recording";
-            recordBtn.classList.remove('recording');
-        }
-    }
-
-    function playYourVoice() {
-        if (audioUrl) {
-            const audio = new Audio(audioUrl);
-            audio.play();
-        }
-    }
-
-    function resetRecorderState() {
-        isRecording = false;
-        const recordBtn = document.getElementById('record-btn');
-        const playbackBtn = document.getElementById('playback-btn');
-        if(recordBtn && playbackBtn) {
-            recordBtn.innerText = "Start Recording";
-            recordBtn.classList.remove('recording');
-            playbackBtn.disabled = true;
-        }
-        audioUrl = null;
-        audioChunks = [];
-    }
-
-    function checkAnswer(selected, correct) {
-        const feedback = document.getElementById('feedback');
-        const options = document.querySelectorAll('.option-btn');
-        options.forEach(b => b.removeAttribute('onclick'));
-
-        if(selected === correct) {
-            feedback.innerText = "Correct! 🌟";
-            feedback.className = "feedback correct";
-            score += 10;
-            document.getElementById('score').innerText = score;
-        } else {
-            feedback.innerText = `Incorrect.`;
-            feedback.className = "feedback wrong";
-        }
-        
-        saveAppState(); 
-        document.getElementById('next-btn').style.display = "block";
-    }
-
-    function nextQuestion() {
-        currentIndex++;
-        saveAppState();
-        loadQuestion();
-    }
-
-    function showReviewMode() {
-        updateProgressIndicators();
-        const card = document.querySelector('.card');
-        const optionsGrid = document.getElementById('options-container');
-        const feedback = document.getElementById('feedback');
-        const ctrlPanel = document.getElementById('control-panel');
-        
-        feedback.innerText = "Nuanjan has completed the practice!";
-        optionsGrid.innerHTML = "";
-        if (ctrlPanel) ctrlPanel.style.display = "none";
-        
-        let html = `
-            <div style="text-align:left; margin-top:10px;">
-                <h2 style="color:var(--primary); text-align:center;">Review Mode</h2>
-                <p style="text-align:center;">Final Score: ${score}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Topic</th>
-                            <th>Listen Back</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-
-        data.forEach((item, index) => {
-            const userAudio = recordingsHistory[index];
-            html += `
-                <tr>
-                    <td><strong>${item.topic}</strong><br>${item.question}</td>
-                    <td style="text-align:center;">
-                        ${userAudio ? 
-                            `<button class="btn" style="padding:5px; width:auto;" onclick="playHistoryAudio('${userAudio}')">▶️ Play</button>` 
-                            : `No Recording`}
-                    </td>
-                </tr>`;
-        });
-
-        html += `</tbody></table>
-                <button class="btn" style="margin-top:20px; background-color:var(--accent);" onclick="clearStorageEngine(); localStorage.removeItem('ukvi_app_start_date'); location.reload();">Restart Course</button>
-            </div>`;
-        
-        card.innerHTML = html;
-    }
-
-    function playHistoryAudio(url) {
-        if(url) {
-            const audio = new Audio(url);
-            audio.play();
-        }
-    }
-
-    window.onload = loadAppState;
+    window.onload = () => setTimeout(() => loadCategory("All"), 100);
 </script>
-
 </body>
 </html>
+
+```
